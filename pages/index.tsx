@@ -27,8 +27,12 @@ const Home: NextPage = () => {
   const [dataOfNotificationAdmin, setDataOfNotificationAdmin] = useState<
     MessageNotificationAdmin[]
   >([]);
+  const [dataOfNotificationUser, setDataOfNotificationUser] = useState<
+    MessageNotificationAdmin[]
+  >([]);
 
   useEffect(() => {
+    notificationUser();
     notificationAdmin();
   });
 
@@ -41,48 +45,98 @@ const Home: NextPage = () => {
     };
   };
 
+  const notificationUser = async () => {
+    const eventSource = new EventSource(`${baseUrl}/notification/user`);
+    eventSource.onmessage = (e) =>
+      setDataOfNotificationUser([JSON.parse(e.data)]);
+    return () => {
+      eventSource.close();
+    };
+  };
+
   return (
     <div className="p-10">
       <div className="font-bold text-blue-500 text-xl">Notification admin</div>{" "}
       <div className="my-4 text-green-600 font-bold">History</div>
-      <div className="space-y-2">
-        {dataOfNotificationAdmin.length === 0 ? (
-          <div className="w-96 p-10 border text-center">No data</div>
-        ) : (
-          <>
-            {" "}
-            {dataOfNotificationAdmin?.map((item, index) => {
-              return (
-                <div
-                  key={item.orderId + index}
-                  className="border w-96 rounded-md p-4 text-sm text-gray-500 font-semibold"
-                >
-                  <div>
-                    Order ID :{" "}
-                    <span className="font-bold text-red-600 text-xl">
-                      {item.orderId}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <div>Full name : </div>
-                    <div className="font-semibold text-black">
-                      {item.firstName} {item.lastName}
+      <div className="grid grid-cols-2">
+        <div className="space-y-2">
+          {dataOfNotificationAdmin.length === 0 ? (
+            <div className="w-96 p-10 border text-center">No data</div>
+          ) : (
+            <>
+              <div>Admin</div>
+              {dataOfNotificationAdmin?.map((item, index) => {
+                return (
+                  <div
+                    key={item.orderId + index}
+                    className="border w-96 rounded-md p-4 text-sm text-gray-500 font-semibold"
+                  >
+                    <div>
+                      Order ID :{" "}
+                      <span className="font-bold text-red-600 text-xl">
+                        {item.orderId}
+                      </span>
                     </div>
-                  </div>
-                  <div>
-                    <div>Withdraw</div>
-                    <div className="flex justify-between pl-6">
-                      <div>Price : </div>
+                    <div className="flex justify-between">
+                      <div>Full name : </div>
                       <div className="font-semibold text-black">
-                        {item?.withdraw?.price} {item?.withdraw?.unitPrice}
+                        {item.firstName} {item.lastName}
+                      </div>
+                    </div>
+                    <div>
+                      <div>Withdraw</div>
+                      <div className="flex justify-between pl-6">
+                        <div>Price : </div>
+                        <div className="font-semibold text-black">
+                          {item?.withdraw?.price} {item?.withdraw?.unitPrice}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </>
-        )}
+                );
+              })}
+            </>
+          )}
+        </div>
+        <div className="space-y-2">
+          {dataOfNotificationUser.length === 0 ? (
+            <div className="w-96 p-10 border text-center">No data</div>
+          ) : (
+            <>
+              <div>User</div>
+              {dataOfNotificationUser?.map((item, index) => {
+                return (
+                  <div
+                    key={item.orderId + index}
+                    className="border w-96 rounded-md p-4 text-sm text-gray-500 font-semibold"
+                  >
+                    <div>
+                      Order ID :{" "}
+                      <span className="font-bold text-red-600 text-xl">
+                        {item.orderId}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <div>Full name : </div>
+                      <div className="font-semibold text-black">
+                        {item.firstName} {item.lastName}
+                      </div>
+                    </div>
+                    <div>
+                      <div>Withdraw</div>
+                      <div className="flex justify-between pl-6">
+                        <div>Price : </div>
+                        <div className="font-semibold text-black">
+                          {item?.withdraw?.price} {item?.withdraw?.unitPrice}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
